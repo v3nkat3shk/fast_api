@@ -5,12 +5,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.datastructures import URL
 
-from server.routers import users, books
+from routers import users, books
 
-from server.database.models import Base
-from server.database.database import engine
+from database.models import Base
+from database.database import engine
 from server.dependencies import DataBaseDep
-from server.database.schemas import User
+from database.schemas import User
 from server.dependencies import (
     get_user, fake_hash_password, get_current_active_user, oauth2_scheme
 )

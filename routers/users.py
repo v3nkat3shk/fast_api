@@ -3,11 +3,12 @@ from typing import Annotated
 from fastapi import HTTPException, Path, status, Depends
 from fastapi.routing import APIRouter
 
-from server.database import query, schemas, models
+from database import query, schemas, models
 from server.exceptions import UserNotFoundException
 from server.dependencies import DataBaseDep, oauth2_scheme
 
-router = APIRouter(dependencies=[Depends(oauth2_scheme)])
+router = APIRouter()
+# router = APIRouter(dependencies=[Depends(oauth2_scheme)])
 
 
 @router.post(

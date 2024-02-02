@@ -4,8 +4,8 @@ from fastapi import Depends
 from fastapi.routing import APIRouter
 from sqlalchemy.orm import Session
 
-from server.database.database import get_db
-from server.database import query, schemas
+from database.database import get_db
+from database import query, schemas
 from server.exceptions import UserNotFoundException
 
 router = APIRouter()

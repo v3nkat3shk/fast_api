@@ -4,9 +4,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from server.database.database import get_db
-from server.database.schemas import User
-from server.database import query
+from database.database import get_db
+from database.schemas import User
+from database import query
 
 
 DataBaseDep = Annotated[Generator[Session, Any, None], Depends(get_db)]
