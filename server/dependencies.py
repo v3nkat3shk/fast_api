@@ -11,7 +11,7 @@ from database import query
 
 DataBaseDep = Annotated[Generator[Session, Any, None], Depends(get_db)]
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 def fake_hash_password(password: str):

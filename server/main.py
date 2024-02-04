@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.datastructures import URL
+from database import query, schemas
 
 from routers import users, books
 
@@ -27,7 +28,19 @@ def redirect_to_docs(request: Request) -> RedirectResponse:
     return RedirectResponse(url)
 
 
-@application.post("/token")
+@application.post(
+    "/sign_up/",
+    response_model=schemas.User,
+    description="API for user sign up")
+def sign_up_user(user: schemas.UserCreate, db: DataBaseDep):
+    db_user = query.get_user_by_email(db, email=user.email)
+    if db_user:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Email already registered")
+    return query.create_user(db=db, user=user)
+
+
+@application.post("/login")
 async def login(
     db: DataBaseDep,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
@@ -35,7 +48,7 @@ async def login(
     user = get_user(form_data.username, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="wrong username or password")
+                            detail="User does not exist")
     hashed_password = fake_hash_password(form_data.password)
     if not hashed_password == user.hashed_password:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -56,8 +69,6 @@ async def read_items(token: Annotated[str, Depends(oauth2_scheme)]):
     return {"token": token}
 
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:8080",
 ]
