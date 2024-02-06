@@ -6,13 +6,14 @@
 
 ```shell
 python -m pip install -r requirments.txt
-uvicorn server.main:application --reload
+./run.py
 ```
 
 ## To Do
 
-- User sign-up and sign-in.
-  - [ ] Store hashed password
-  - [ ] Token Authentication.
-  - [ ] Google FaceBook login.
-- [ ] Strip intigration (if possiable).
+- [x] Store hashed password
+- [x] Token Authentication
+- [ ] Proper Migration mechanism
+- [ ] User PostgreSql or MySql
+- [ ] Google and FaceBook login
+- [ ] Strip intigration (if possiable)
