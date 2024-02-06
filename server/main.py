@@ -1,5 +1,5 @@
 import datetime
-from typing import Annotated
+from typing import Annotated, Any
 from fastapi import FastAPI, Request, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,7 +17,6 @@ from utils.dependencies import (
     get_current_active_user,
     authenticate_user, ACCESS_TOKEN_EXPIRE_MINUTES
 )
-from utils.passwd import hashed_password
 
 Base.metadata.create_all(bind=engine)
 
@@ -40,8 +39,6 @@ def sign_up_user(user: schemas.UserCreate, db: DataBaseDep):
     if db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Email already registered")
-    hashed_passwd = hashed_password(user.password)
-    user.__setattr__("password", hashed_passwd)
     return query.create_user(db=db, user=user)
 
 

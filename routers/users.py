@@ -4,8 +4,9 @@ from fastapi import Path, Depends
 from fastapi.routing import APIRouter
 
 from database import query, schemas
+from database.models import User
 from utils.exceptions import UserNotFoundException
-from utils.dependencies import DataBaseDep, oauth2_scheme
+from utils.dependencies import DataBaseDep, oauth2_scheme, get_current_user
 
 router = APIRouter(dependencies=[Depends(oauth2_scheme)])
 
@@ -25,3 +26,8 @@ async def read_user(
     if db_user is None:
         raise UserNotFoundException(user_id)
     return db_user
+
+
+@router.get("/current_user", response_model=schemas.User)
+async def current_user(current_user: Annotated[User, Depends(get_current_user)]):
+    return current_user
