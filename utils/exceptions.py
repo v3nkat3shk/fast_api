@@ -2,6 +2,7 @@ from typing import Dict, Any
 
 from fastapi import HTTPException, status
 
+
 class UserNotFoundException(HTTPException):
     def __init__(self,
                  user_id=None,

@@ -4,8 +4,8 @@ from fastapi import Path, Depends
 from fastapi.routing import APIRouter
 
 from database import query, schemas
-from server.exceptions import UserNotFoundException
-from server.dependencies import DataBaseDep, oauth2_scheme
+from utils.exceptions import UserNotFoundException
+from utils.dependencies import DataBaseDep, oauth2_scheme
 
 router = APIRouter(dependencies=[Depends(oauth2_scheme)])
 

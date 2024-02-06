@@ -1,3 +1,4 @@
+import datetime
 from typing import Annotated
 from fastapi import FastAPI, Request, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
@@ -10,11 +11,13 @@ from routers import users, books
 
 from database.models import Base
 from database.database import engine
-from server.dependencies import DataBaseDep
-from database.schemas import User
-from server.dependencies import (
-    get_user, fake_hash_password, get_current_active_user, oauth2_scheme
+from database.schemas import Token, User
+from utils.dependencies import (
+    create_access_token, DataBaseDep,
+    get_current_active_user,
+    authenticate_user, ACCESS_TOKEN_EXPIRE_MINUTES
 )
+from utils.passwd import hashed_password
 
 Base.metadata.create_all(bind=engine)
 
@@ -37,6 +40,8 @@ def sign_up_user(user: schemas.UserCreate, db: DataBaseDep):
     if db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Email already registered")
+    hashed_passwd = hashed_password(user.password)
+    user.__setattr__("password", hashed_passwd)
     return query.create_user(db=db, user=user)
 
 
@@ -45,16 +50,19 @@ async def login(
     db: DataBaseDep,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):
-    user = get_user(form_data.username, db)
+    user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="User does not exist")
-    hashed_password = fake_hash_password(form_data.password)
-    if not hashed_password == user.hashed_password:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="wrong username or password")
-
-    return {"access_token": user.email, "token_type": "bearer"}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = datetime.timedelta(
+        minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    return Token(access_token=access_token, token_type="bearer")
 
 
 @application.get("/users/me", response_model=User)
@@ -63,10 +71,6 @@ async def read_users_me(
 ):
     return current_user
 
-
-@application.get("/tokens/")
-async def read_items(token: Annotated[str, Depends(oauth2_scheme)]):
-    return {"token": token}
 
 origins = [
     "http://localhost",
