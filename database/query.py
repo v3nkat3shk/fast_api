@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import update
 
 import database.models as models
 import database.schemas as schemas
@@ -15,6 +16,16 @@ def get_user_by_email(db: Session, email: str):
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
+
+
+def update_user(db: Session, user_id: int, user: schemas.UserUpdate):
+    stmt = (
+        update(models.User)
+        .where(models.User.id == user_id)
+        .values(email=user.email)
+    )
+
+    return get_user(db, user_id)
 
 
 def create_user(db: Session, user: schemas.UserCreate):

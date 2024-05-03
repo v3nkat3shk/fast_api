@@ -14,6 +14,10 @@ class User(Base):
 
     books = relationship("Book", back_populates="created_by")
 
+    def __repr__(self) -> str:
+        return f"User(id={self.id}, email={self.email}, is_active={self.is_active})"
+
+
 
 class Book(Base):
     __tablename__ = "books"

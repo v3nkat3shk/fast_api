@@ -6,7 +6,7 @@
 
 ```shell
 python -m pip install -r requirments.txt
-./run.py
+python run.py
 ```
 
 ## To Do
@@ -14,6 +14,6 @@ python -m pip install -r requirments.txt
 - [x] Store hashed password
 - [x] Token Authentication
 - [ ] Proper Migration mechanism
-- [ ] User PostgreSql or MySql
+- [ ] Use PostgreSql or MySql
 - [ ] Google and FaceBook login
 - [ ] Strip intigration (if possiable)

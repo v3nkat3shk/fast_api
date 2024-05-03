@@ -28,6 +28,15 @@ async def read_user(
     return db_user
 
 
+@router.put("/users/{user_id}", response_model=schemas.User)
+async def update_user(
+    db: DataBaseDep,
+    user_id: Annotated[int, Path(title="The Id of the user to get")],
+    payload: schemas.UserUpdate
+):
+    return query.update_user(db, user_id, payload)
+
+
 @router.get("/current_user", response_model=schemas.User)
 async def current_user(current_user: Annotated[User, Depends(get_current_user)]):
     return current_user
