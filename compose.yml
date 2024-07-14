@@ -1,0 +1,10 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["python", "run.py"]
+    volumes:
+      - ./:/app
+    ports:
+      - 8080:8080
